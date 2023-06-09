@@ -67,3 +67,6 @@ Generates a TSV file with the following columns:
 - `FISH_VERSION`: The value of `$FISH_VERSION`
 - `proc-exe`: The real path of the executable from `/proc/<pid>/exe`
 - `proc-exe-version`: The version of the executable from `/proc/<pid>/exe --version`
+
+
+[1]: https://github.com/pwwang/pipen
