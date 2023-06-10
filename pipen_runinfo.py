@@ -7,8 +7,7 @@ from pipen.job import Job
 if TYPE_CHECKING:
     from pipen import Proc, Pipen
 
-
-__version__ = "0.0.0"
+__version__ = "0.1.0"
 
 # Monkey-path Job.CMD_WRAPPER_TEMPLATE to time the script
 Job.CMD_WRAPPER_TEMPLATE = Job.CMD_WRAPPER_TEMPLATE.replace(
