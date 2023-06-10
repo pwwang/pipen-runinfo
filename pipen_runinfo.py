@@ -110,7 +110,7 @@ def _get_lang(langpath: str | List[str]):
     if isinstance(langpath, list):
         langpath = langpath[0]
 
-    stem = Path(langpath).stem
+    stem = Path(langpath).stem if langpath else "bash"
     # Might be python3, python3.7, python3.7m, etc.
     if stem.startswith("python"):
         return "python"
