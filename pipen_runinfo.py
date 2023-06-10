@@ -5,7 +5,7 @@ from pipen import plugin
 from pipen.job import Job
 
 if TYPE_CHECKING:
-    from pipen import Proc, Pipen, Job
+    from pipen import Proc, Pipen
 
 
 __version__ = "0.0.0"
