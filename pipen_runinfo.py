@@ -25,7 +25,7 @@ Job.CMD_WRAPPER_TEMPLATE = Job.CMD_WRAPPER_TEMPLATE.replace(
             jobcmd="{job.strcmd}"
         fi
 
-        eval $jobcmd"""
+        eval $jobcmd"""  # noqa: E501
     ),
 ).replace(
     "{postscript}",
