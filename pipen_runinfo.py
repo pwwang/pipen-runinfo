@@ -61,7 +61,7 @@ def _session_info(show_path: bool, include_submodule: bool):
         lines.append("Name\t__version__\timportlib.metadata\n")
         lines.append(f"python\t{sys.version}\t-\n")
 
-    for name, module in sys.modules.items():
+    for name, module in sys.modules.copy().items():
         if not include_submodule and "." in name:
             continue
 
