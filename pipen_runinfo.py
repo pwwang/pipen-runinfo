@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 from typing import TYPE_CHECKING, List
 from pathlib import Path
 
@@ -28,10 +29,17 @@ Job.CMD_WRAPPER_TEMPLATE = Job.CMD_WRAPPER_TEMPLATE.replace(
     ),
 ).replace(
     "{postscript}",
-    "{postscript}\n\n"
-    "lshw -quiet -notime -sanitize -short -class processor -class memory "
-    "-class display -class storage 2>/dev/null "
-    "> {job.metadir}/job.runinfo.device"
+    textwrap.dedent(
+        """
+        {postscript}
+
+        echo "# CPU" > {job.metadir}/job.runinfo.device
+        lscpu >> {job.metadir}/job.runinfo.device
+        echo "" >> {job.metadir}/job.runinfo.device
+        echo "# Memory" >> {job.metadir}/job.runinfo.device
+        lsmem --summary=only >> {job.metadir}/job.runinfo.device
+        """
+    ),
 )
 
 
