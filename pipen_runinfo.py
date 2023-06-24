@@ -14,18 +14,22 @@ __version__ = "0.2.0"
 
 # Monkey-path Job.CMD_WRAPPER_TEMPLATE to time the script
 Job.CMD_WRAPPER_TEMPLATE = Job.CMD_WRAPPER_TEMPLATE.replace(
-    "{job.strcmd}",
+    "{job.strcmd} \\",
     textwrap.dedent(
         """
-        # Check if GNU time is available
-        if env time -V &>/dev/null; then
-            jobcmd="env time -o {job.metadir}/job.runinfo.time -v {job.strcmd}"
-        else
-            echo "GNU time is not available, job is not timed." > {job.metadir}/job.runinfo.time
-            jobcmd="{job.strcmd}"
+        jobcmd="{job.strcmd}"
+        if [ -z "$jobcmd" ]; then
+            jobcmd="echo 'No command to run (probably no script specified?)' 1>&2"
         fi
 
-        eval $jobcmd"""  # noqa: E501
+        # Check if GNU time is available
+        if env time -V &>/dev/null; then
+            jobcmd="env time -o {job.metadir}/job.runinfo.time -v $jobcmd"
+        else
+            echo "GNU time is not available, job is not timed." > {job.metadir}/job.runinfo.time
+        fi
+
+        eval $jobcmd \\"""  # noqa: E501
     ),
 ).replace(
     "{postscript}",
