@@ -1,13 +1,17 @@
+from shutil import which
 from pipen import Proc, Pipen
 
+r_installed = which("Rscript") is not None
 
-class R(Proc):
-    """Running info for R."""
 
-    input = "var"
-    output = "var:var:{{in.var}}"
-    script = """print("hello")"""
-    lang = "Rscript"
+if r_installed:
+    class R(Proc):
+        """Running info for R."""
+
+        input = "var"
+        output = "var:var:{{in.var}}"
+        script = """print("hello")"""
+        lang = "Rscript"
 
 
 class Python(Proc):
@@ -61,8 +65,13 @@ class BashRuninfoLang(Proc):
 
 
 class Pipeline(Pipen):
-    starts = [R, Python, PythonNoPathWithSubmods, Fish, Bash, BashRuninfoLang]
-    data = [[1], [2], [3], [4], [5], [6]]
+    """A pipeline to test the runinfo plugin."""
+    if r_installed:
+        starts = [R, Python, PythonNoPathWithSubmods, Fish, Bash, BashRuninfoLang]
+        data = [[1], [2], [3], [4], [5], [6]]
+    else:
+        starts = [Python, PythonNoPathWithSubmods, Fish, Bash, BashRuninfoLang]
+        data = [[2], [3], [4], [5], [6]]
 
 
 if __name__ == "__main__":

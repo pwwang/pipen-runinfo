@@ -75,7 +75,7 @@ def _session_info(show_path: bool, include_submodule: bool):
             getattr(module, "version", "-"),
         )
         mdfile = getattr(module, "__file__", None)
-        if mdfile is None or "site-packages" not in mdfile:
+        if mdfile is None or "site-packages" not in mdfile or not module.__package__:
             # Suppose it's a built-in module
             continue
 
