@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .version import __version__ as version
 
 # Session info code for python
