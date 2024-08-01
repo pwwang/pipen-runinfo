@@ -30,6 +30,18 @@ jobs:
         run: |
           for pp in $(ls -d .pipen/*); do
             pp_name=$(basename $pp)
+            if [ $pp_name == "PipelineR" ]; then
+              echo "##[group]$pp_name"
+              echo "Skipped"
+              echo "##[endgroup]"
+              continue
+            fi
+            if [ $pp_name == "PipelineFish" ]; then
+              echo "##[group]$pp_name"
+              echo "Skipped"
+              echo "##[endgroup]"
+              continue
+            fi
             for proc in $(ls -d $pp/*); do
               proc_name=$(basename $proc)
               for i in $(ls -d $proc/*); do

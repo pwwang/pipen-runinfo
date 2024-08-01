@@ -116,6 +116,7 @@ class PipenRuninfoPlugin:
                     -o $runinfo_time $cmd"
             else
                 echo "GNU time is not available, job is not timed." > $runinfo_time
+                echo "See: https://www.gnu.org/software/time/" >> $runinfo_time
             fi
             """ % {"version": __version__}
         )
