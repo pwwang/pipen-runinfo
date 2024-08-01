@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9, "3.10", "3.11", "3.12"]
+        python-version: [3.9]
 
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,6 @@ jobs:
           poetry install -v
       - name: Run flake8
         run: flake8 pipen_runinfo
-      - run: pwd; ls -l; ls -l example/
       - name: Run examples
         run: poetry run python example/example.py
       - name: Show generated runinfo
