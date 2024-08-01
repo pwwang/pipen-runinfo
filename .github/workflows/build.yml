@@ -23,7 +23,7 @@ jobs:
           python -m pip install poetry
           poetry install -v
       - name: Run flake8
-        run: flake8 pipen_runinfo.py
+        run: flake8 pipen_runinfo
 
   deploy:
     needs: build
