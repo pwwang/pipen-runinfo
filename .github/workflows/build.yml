@@ -24,6 +24,27 @@ jobs:
           poetry install -v
       - name: Run flake8
         run: flake8 pipen_runinfo
+      - name: Run examples
+        run: poetry run python example/example.py
+      - name: Show generated runinfo
+        run: |
+          for pp in $(ls -d .pipen/*); do
+            pp_name=$(basename $pp)
+            for proc in $(ls -d $pp/*); do
+              proc_name=$(basename $proc)
+              for i in $(ls -d $proc/*); do
+                echo "##[group]$pp_name/$proc_name/$(basename $i)/device"
+                cat $i/job.runinfo.device
+                echo "##[endgroup]"
+                echo "##[group]$pp_name/$proc_name/$(basename $i)/time"
+                cat $i/job.runinfo.time
+                echo "##[endgroup]"
+                echo "##[group]$pp_name/$proc_name/$(basename $i)/session"
+                cat $i/job.runinfo.session
+                echo "##[endgroup]"
+              done
+            done
+          done
 
   deploy:
     needs: build
