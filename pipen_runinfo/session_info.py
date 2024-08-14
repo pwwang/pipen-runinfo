@@ -60,6 +60,9 @@ def _run_session_info():
 
 
 # End of injected by pipen_runinfo
+# ------------------------------------------------------------
+# Regular script starts
+# ------------------------------------------------------------
 """
 
 
@@ -96,14 +99,17 @@ def inject_session_code_r(
     show_path: bool,
     include_submodule: bool,
 ) -> str:
-    indent = " " * 4
+    # indent = " " * 4
     injected = [f"# Injected by pipen_runinfo v{version}, please do not modify"]
     injected.extend(SESSION_INFO_R.splitlines())
     injected.append("tryCatch({")
     injected.append("# End of injected by pipen_runinfo, please do not modify")
     injected.append("# ------------------------------------------------------")
+    injected.append("# Regular script starts")
+    injected.append("# ------------------------------------------------------")
     injected.append("")
-    injected.extend((f"{indent}{line}" for line in script.splitlines()))
+    # injected.extend((f"{indent}{line}" for line in script.splitlines()))
+    injected.append(script)
     injected.append("")
     injected.append("# ------------------------------------------------------")
     injected.append("# Injected by pipen_runinfo, please do not modify")
@@ -134,6 +140,9 @@ _session_info() {
 
 trap _session_info EXIT
 # End of injected by pipen_runinfo
+# ------------------------------------------------------------
+# Regular script starts
+# ------------------------------------------------------------
 """ % {"version": version}
 
 
@@ -162,6 +171,9 @@ end
 
 trap _session_info EXIT
 # End of injected by pipen_runinfo, please do not modify
+# ------------------------------------------------------------
+# Regular script starts
+# ------------------------------------------------------------
 """ % {"version": version}
 
 
