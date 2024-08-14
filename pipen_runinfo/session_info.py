@@ -112,6 +112,8 @@ def inject_session_code_r(
     injected.append(script)
     injected.append("")
     injected.append("# ------------------------------------------------------")
+    injected.append("# Regular script ends")
+    injected.append("# ------------------------------------------------------")
     injected.append("# Injected by pipen_runinfo, please do not modify")
     injected.append("}, finally = .save_session_info())")
     injected.append("# End of injected by pipen_runinfo, please do not modify")
