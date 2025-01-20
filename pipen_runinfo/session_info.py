@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from .version import __version__ as version
 
 # Session info code for python
@@ -65,17 +66,46 @@ def _run_session_info():
 # ------------------------------------------------------------
 """
 
+future_import_statement = re.compile(
+    r"^from\s+__future__\s+import\s+annotations\s*$",
+    re.MULTILINE,
+)
+
 
 def inject_session_code_python(
     script: str,
     show_path: bool,
     include_submodule: bool,
 ) -> str:
+    """Inject the session info code into a python script.
+
+    Args:
+        script: The script to inject the session info code into.
+        show_path: Whether to include the path of the modules in the session info.
+        include_submodule: Whether to include submodules in the session info.
+
+    Returns:
+        The injected script.
+    """
     code = SESSION_INFO_PYTHON % {
         "version": version,
         "show_path": show_path,
         "include_submodule": include_submodule,
     }
+    parts = future_import_statement.split(script, 1)
+    if len(parts) == 1:
+        return f"{code}\n\n{script}"
+
+    # Matched!
+    # Check if the future import is at the top
+    # The first parts must be empty or comments
+    if not parts[0].strip() or all(
+        line.lstrip().startswith("#") or not line.strip()
+        for line in parts[0].splitlines()
+    ):
+        return f"from __future__ import annotations\n{code}\n{''.join(parts)}"
+
+    # The future import is not at the top, it is probably in a string
     return f"{code}\n\n{script}"
 
 
