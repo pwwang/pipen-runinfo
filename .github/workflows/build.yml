@@ -24,6 +24,8 @@ jobs:
           poetry install -v
       - name: Run flake8
         run: flake8 pipen_runinfo
+      - name: Run tests
+        run: poetry run pytest
       - name: Run examples
         run: poetry run python example/example.py
       - name: Show generated runinfo

@@ -9,7 +9,7 @@ from pipen import plugin
 from .version import __version__
 from .session_info import get_inject_session_code_fun
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pipen import Proc, Pipen
     from pipen.job import Job
 
@@ -81,11 +81,11 @@ class PipenRuninfoPlugin:
             langpath = proc.lang
             runinfo_lang = _get_lang(langpath)
 
-        if proc.script is None:
+        if proc.script is None:  # pragma: no cover
             return
 
         inject_session_code_fun = get_inject_session_code_fun(runinfo_lang)
-        if inject_session_code_fun is None:
+        if inject_session_code_fun is None:  # pragma: no cover
             return
 
         proc.script = inject_session_code_fun(
