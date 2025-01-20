@@ -18,14 +18,14 @@ runinfo = "pipen_runinfo:PipenRuninfoPlugin"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
-pytest-cov = "^5"
+pytest-cov = "^6"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "-v -n auto --cov pipen_runinfo --cov-report xml:.coverage.xml --cov-report term-missing"
+addopts = "-v --cov pipen_runinfo --cov-report xml:.coverage.xml --cov-report term-missing"
 filterwarnings = [ "error" ]
 # console_output_style = "progress"
 # junit_family = "xunit1"
