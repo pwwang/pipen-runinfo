@@ -52,3 +52,21 @@ def test_pipeline(tmp_path):
     pipeline.run()
 
 
+def test_pipeline_with_no_script(tmp_path):
+
+    outdir = tmp_path / "outdir"
+    workdir = tmp_path / "workdir"
+    print(workdir)
+
+    class Python(Proc):
+        """Running info for Python."""
+        input = "var"
+        output = "var:var:{{in.var}}"
+        lang = "python"
+
+    pipeline = (
+        Pipen(name="PipelineNoscript", forks=2, outdir=outdir, workdir=workdir)
+        .set_starts(Python)
+        .set_data([0, 1])
+    )
+    pipeline.run()
