@@ -3,7 +3,7 @@ from pipen import Proc, Pipen
 from pipen_runinfo import _get_lang
 
 
-@pytest.mark.forked
+# @pytest.mark.forked
 def test_pipeline(tmp_path):
 
     outdir = tmp_path / "outdir"
@@ -35,7 +35,7 @@ def test_pipeline(tmp_path):
     pipeline.run()
 
 
-@pytest.mark.forked
+# @pytest.mark.forked
 def test_pipeline_with_no_script(tmp_path):
 
     outdir = tmp_path / "outdir"
