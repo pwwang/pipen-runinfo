@@ -1,12 +1,21 @@
+import os
+import sys
 from shutil import which
+from yunpath import AnyPath
 from pipen import Proc, Pipen
+from dotenv import load_dotenv
 
+load_dotenv()
+BUCKET = os.getenv("BUCKET")
+is_cloud = len(sys.argv) > 1 and sys.argv[1] == "--cloud"
 r_installed = which("Rscript") is not None
+workdir = AnyPath(f"gs://{BUCKET}/pipen_runinfo_example") if is_cloud else ".pipen"
 
 
 pipelines = []
 
 if r_installed:
+
     class R(Proc):
         """Running info for R."""
 
@@ -22,7 +31,11 @@ if r_installed:
         """
         lang = "Rscript"
 
-    pipelines.append(Pipen(name="PipelineR", forks=2).set_starts(R).set_data([0, 1]))
+    pipelines.append(
+        Pipen(name="PipelineR", forks=2, cache=False, workdir=workdir)
+        .set_starts(R)
+        .set_data([0, 1])
+    )
 
 
 class Python(Proc):
@@ -45,7 +58,7 @@ class Python(Proc):
 
 
 pipelines.append(
-    Pipen(name="PipelinePython", forks=2)
+    Pipen(name="PipelinePython", forks=2, cache=False, workdir=workdir)
     .set_starts(Python)
     .set_data([0, 1])
 )
@@ -72,7 +85,7 @@ class PythonNoPathWithSubmods(Proc):
 
 
 pipelines.append(
-    Pipen(name="PipelinePythonNoPathWithSubmods", forks=2)
+    Pipen(name="PipelinePythonNoPathWithSubmods", forks=2, cache=False, workdir=workdir)
     .set_starts(PythonNoPathWithSubmods)
     .set_data([0, 1])
 )
@@ -94,7 +107,11 @@ class Fish(Proc):
     lang = "fish"
 
 
-pipelines.append(Pipen(name="PipelineFish", forks=2).set_starts(Fish).set_data([0, 1]))
+pipelines.append(
+    Pipen(name="PipelineFish", forks=2, cache=False, workdir=workdir)
+    .set_starts(Fish)
+    .set_data([0, 1])
+)
 
 
 class Bash(Proc):
@@ -113,7 +130,11 @@ class Bash(Proc):
     lang = "bash"
 
 
-pipelines.append(Pipen(name="PipelineBash", forks=2).set_starts(Bash).set_data([0, 1]))
+pipelines.append(
+    Pipen(name="PipelineBash", forks=2, cache=False, workdir=workdir)
+    .set_starts(Bash)
+    .set_data([0, 1])
+)
 
 
 class BashRuninfoLang(Proc):
@@ -134,7 +155,7 @@ class BashRuninfoLang(Proc):
 
 
 pipelines.append(
-    Pipen(name="PipelineBashRuninfoLang", forks=2)
+    Pipen(name="PipelineBashRuninfoLang", forks=2, cache=False, workdir=workdir)
     .set_starts(BashRuninfoLang)
     .set_data([0, 1])
 )
