@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: poetry run pytest
       - name: Run examples
-        run: poetry run python example/example.py
+        run: poetry run python examples/example.py
       - name: Show generated runinfo
         run: |
           for pp in $(ls -d .pipen/*); do
