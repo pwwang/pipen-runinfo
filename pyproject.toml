@@ -8,7 +8,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pipen = "^0.15.7"
+# pipen = "^0.15.5"
+pipen = { version = "^0.16.0a1", allow-prereleases = true }
 
 [tool.poetry.build]
 generate-setup-file = true
@@ -19,6 +20,11 @@ runinfo = "pipen_runinfo:PipenRuninfoPlugin"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
 pytest-cov = "^6"
+
+
+[tool.poetry.group.examples.dependencies]
+google-cloud-storage = "^3"
+python-dotenv = "^1"
 
 [build-system]
 requires = ["poetry-core"]
