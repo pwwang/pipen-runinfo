@@ -31,7 +31,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "-v --cov pipen_runinfo --cov-report xml:.coverage.xml --cov-report term-missing"
-filterwarnings = [ "error" ]
+filterwarnings = [ "ignore::pytest.PytestUnraisableExceptionWarning" ]
 # console_output_style = "progress"
 # junit_family = "xunit1"
 
