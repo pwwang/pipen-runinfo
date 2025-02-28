@@ -3,24 +3,7 @@ from pipen import Proc, Pipen
 from pipen_runinfo import _get_lang
 
 
-def test_get_lang():
-
-    assert _get_lang("python") == "python"
-    assert _get_lang("python") == "python"
-    assert _get_lang("python3") == "python"
-    assert _get_lang("python3.8") == "python"
-    assert _get_lang("R") == "R"
-    assert _get_lang("Rscript") == "R"
-    assert _get_lang("Rscript-3.6") == "R"
-    assert _get_lang("R-3.6") == "R"
-    assert _get_lang("bash") == "bash"
-    assert _get_lang(["bash", "-e"]) == "bash"
-    assert _get_lang("fish") == "fish"
-    assert _get_lang("sh") == "sh"
-    assert _get_lang("zsh") == "zsh"
-    assert _get_lang("python3.8.1") == "python"
-
-
+@pytest.mark.forked
 def test_pipeline(tmp_path):
 
     outdir = tmp_path / "outdir"
@@ -52,6 +35,7 @@ def test_pipeline(tmp_path):
     pipeline.run()
 
 
+@pytest.mark.forked
 def test_pipeline_with_no_script(tmp_path):
 
     outdir = tmp_path / "outdir"
@@ -70,3 +54,21 @@ def test_pipeline_with_no_script(tmp_path):
         .set_data([0, 1])
     )
     pipeline.run()
+
+
+def test_get_lang():
+
+    assert _get_lang("python") == "python"
+    assert _get_lang("python") == "python"
+    assert _get_lang("python3") == "python"
+    assert _get_lang("python3.8") == "python"
+    assert _get_lang("R") == "R"
+    assert _get_lang("Rscript") == "R"
+    assert _get_lang("Rscript-3.6") == "R"
+    assert _get_lang("R-3.6") == "R"
+    assert _get_lang("bash") == "bash"
+    assert _get_lang(["bash", "-e"]) == "bash"
+    assert _get_lang("fish") == "fish"
+    assert _get_lang("sh") == "sh"
+    assert _get_lang("zsh") == "zsh"
+    assert _get_lang("python3.8.1") == "python"
