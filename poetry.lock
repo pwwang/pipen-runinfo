@@ -1495,4 +1495,4 @@ cloudpathlib = ">=0.20.0,<0.21.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "58f6ebd33c5366088d238501b6b03ceb1e594b8336977f823b383bcbe2e31613"
+content-hash = "79feeeaa13ab6dcdf2dddc5dbcacc9126380254b25aa245dda2bccdaccc77047"
