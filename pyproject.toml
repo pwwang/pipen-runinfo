@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pipen-runinfo"
-version = "0.9.0a1"
+version = "0.9.0"
 description = "Generate running information for jobs in pipen pipelines"
 authors = ["pwwang <pwwang@pwwang.com>"]
 license = "MIT"
@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 # pipen = "^0.15.5"
-pipen = { version = "^0.16.0a1", allow-prereleases = true }
+pipen = "^0.16.0"
 
 [tool.poetry.build]
 generate-setup-file = true
