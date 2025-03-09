@@ -17,6 +17,7 @@ def _session_info(show_path: bool, include_submodule: bool):
         import importlib_metadata
 
     import sys
+    import warnings
     {%% if "://" in str(job.metadir) %%}
     from yunpath import AnyPath as _AnyPath
     {%% else %%}
@@ -37,11 +38,13 @@ def _session_info(show_path: bool, include_submodule: bool):
         if not include_submodule and "." in name:
             continue
 
-        ver = getattr(
-            module,
-            "__version__",
-            getattr(module, "version", "-"),
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            ver = getattr(
+                module,
+                "__version__",
+                getattr(module, "version", "-"),
+            )
         mdfile = getattr(module, "__file__", None)
         if mdfile is None or "site-packages" not in mdfile or not module.__package__:
             # Suppose it's a built-in module
