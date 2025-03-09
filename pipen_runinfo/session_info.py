@@ -7,7 +7,7 @@ from .version import __version__ as version
 # ------------------------------------------------------------
 SESSION_INFO_PYTHON = r"""
 # Inserted by pipen_runinfo, please do not modify
-import atexit
+import atexit as _atexit
 
 
 def _session_info(show_path: bool, include_submodule: bool):
@@ -61,7 +61,7 @@ def _session_info(show_path: bool, include_submodule: bool):
         fout.writelines(lines)
 
 
-@atexit.register
+@_atexit.register
 def _run_session_info():
     _session_info(%(show_path)s, %(include_submodule)s)
 
