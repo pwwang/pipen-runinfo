@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+from pipen.utils import ignore_firstline_dedent
+
 from .version import __version__ as version
 
 # Session info code for python
@@ -101,6 +103,7 @@ def inject_session_code_python(
         "show_path": show_path,
         "include_submodule": include_submodule,
     }
+    script = ignore_firstline_dedent(script)
     parts = future_import_statement.split(script, 1)
     if len(parts) == 1:
         return f"{code}\n\n{script}"
