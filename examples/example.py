@@ -1,7 +1,7 @@
 import os
 import sys
 from shutil import which
-from yunpath import AnyPath
+from panpath import PanPath
 from pipen import Proc, Pipen
 from dotenv import load_dotenv
 
@@ -9,7 +9,7 @@ load_dotenv()
 BUCKET = os.getenv("BUCKET")
 is_cloud = len(sys.argv) > 1 and sys.argv[1] == "--cloud"
 r_installed = which("Rscript") is not None
-workdir = AnyPath(f"gs://{BUCKET}/pipen_runinfo_example") if is_cloud else ".pipen"
+workdir = PanPath(f"gs://{BUCKET}/pipen_runinfo_example") if is_cloud else ".pipen"
 
 
 pipelines = []

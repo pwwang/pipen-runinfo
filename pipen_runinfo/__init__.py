@@ -4,7 +4,7 @@ import textwrap
 from typing import TYPE_CHECKING, List
 from pathlib import Path
 
-from yunpath import CloudPath
+from panpath import CloudPath
 from pipen import plugin
 
 from .version import __version__
@@ -55,7 +55,7 @@ class PipenRuninfoPlugin:
         pipen.config.plugin_opts.setdefault("runinfo_lang", None)
 
     @plugin.impl
-    def on_proc_script_computed(proc: Proc):
+    async def on_proc_script_computed(proc: Proc):
         """Called when a process is initialized.
 
         Try to modify the script so that we can get the runinfo.
