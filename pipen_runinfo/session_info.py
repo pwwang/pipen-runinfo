@@ -144,7 +144,9 @@ SESSION_INFO_R = r"""
         system2("cloudsh", c("mv", .runinfo.session.file, .runinfo.session.file.orig))
     }
 }
-""" % {"version": version}
+""" % {
+    "version": version
+}
 
 
 def inject_session_code_r(
@@ -207,7 +209,9 @@ trap _session_info EXIT
 # ------------------------------------------------------------
 # Regular script starts
 # ------------------------------------------------------------
-""" % {"version": version}
+""" % {
+    "version": version
+}
 
 
 def inject_session_code_bash(
@@ -247,7 +251,9 @@ trap _session_info EXIT
 # ------------------------------------------------------------
 # Regular script starts
 # ------------------------------------------------------------
-""" % {"version": version}
+""" % {
+    "version": version
+}
 
 
 def inject_session_code_fish(
