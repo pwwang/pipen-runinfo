@@ -124,7 +124,7 @@ def inject_session_code_python(
 # Session info code for R
 # ------------------------------------------------------------
 SESSION_INFO_R = r"""
-.save_session_info <- function() {
+.Last <- function() {
     .runinfo.session.file <- "{{job.metadir}}/job.runinfo.session"
     if (grepl("://", .runinfo.session.file)) {
         .runinfo.session.file.orig <- .runinfo.session.file
@@ -144,9 +144,83 @@ SESSION_INFO_R = r"""
         system2("cloudsh", c("mv", .runinfo.session.file, .runinfo.session.file.orig))
     }
 }
-""" % {
-    "version": version
+
+.on.error <- function() {
+    cat(
+        '\n==================== FULL ERROR TRACEBACK ====================\n\n',
+        file=stderr()
+    )
+
+    script_file <- sub(
+        "^--file=",
+        "",
+        grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+    )
+
+    if (length(script_file) == 0) { script_file <- "unknown" }
+
+    # Find the marker line
+    script_lines <- readLines(script_file, warn = FALSE)
+    marker_line <- which(grepl(
+        "# End of injected by pipen_runinfo, please do not modify",
+        script_lines,
+        fixed = TRUE
+    ))[1]
+
+    calls <- sys.calls()
+    # Exclude the current error handler frame
+    calls <- calls[seq_len(sys.nframe() - 1)]
+
+    str_calls <- sapply(calls, deparse)
+    str_calls <- sapply(str_calls, `[`, 1)  # Take only the first line
+    calls <- calls[!grepl('^(doTryCatch|tryCatchOne|tryCatchList)', str_calls)]
+
+    # Track matched lines to handle duplicates
+    matched_lines <- c()
+
+    stack_num <- 0
+    for (i in seq_along(calls)) {
+        call_text <- deparse(calls[[i]])
+
+        stack_num <- stack_num + 1
+
+        # Format stack number with proper spacing
+        if (length(calls) < 10) {
+            stack_label <- paste0(stack_num, ".")
+        } else {
+            stack_label <- sprintf("%2d.", stack_num)
+        }
+
+        # Try to find line number
+        line_info <- ""
+        if (!is.na(marker_line) && length(call_text) > 0) {
+            first_line_clean <- gsub("\\s+", "", call_text[1])
+
+            for (j in (marker_line + 1):length(script_lines)) {
+                script_line_clean <- gsub("\\s+", "", script_lines[j])
+                if (grepl(first_line_clean, script_line_clean, fixed = TRUE) &&
+                    !(j %in% matched_lines)) {
+                    line_info <- paste0(" at line ", j)
+                    matched_lines <- c(matched_lines, j)
+                    break
+                }
+            }
+        }
+
+        cat(
+            stack_label,
+            paste(call_text, collapse = "\n    "),
+            line_info, "\n",
+            file = stderr()
+        )
+    }
+
+    cat("", file=stderr())
+    quit(status = 1)
 }
+
+options(error = .on.error)
+"""
 
 
 def inject_session_code_r(
@@ -157,21 +231,13 @@ def inject_session_code_r(
     # indent = " " * 4
     injected = [f"# Injected by pipen_runinfo v{version}, please do not modify"]
     injected.extend(SESSION_INFO_R.splitlines())
-    injected.append("tryCatch({")
+    injected.append("")
     injected.append("# End of injected by pipen_runinfo, please do not modify")
     injected.append("# ------------------------------------------------------")
     injected.append("# Regular script starts")
     injected.append("# ------------------------------------------------------")
     injected.append("")
-    # injected.extend((f"{indent}{line}" for line in script.splitlines()))
     injected.append(script)
-    injected.append("")
-    injected.append("# ------------------------------------------------------")
-    injected.append("# Regular script ends")
-    injected.append("# ------------------------------------------------------")
-    injected.append("# Injected by pipen_runinfo, please do not modify")
-    injected.append("}, finally = .save_session_info())")
-    injected.append("# End of injected by pipen_runinfo, please do not modify")
     injected.append("")
     return "\n".join(injected)
 

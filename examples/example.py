@@ -25,8 +25,17 @@ if r_installed:
             if ({{in.var}} == 0) {
                 print("hello")
             } else {
-                print("world")
-                stop("Error")
+                main3 <- function() {
+                    print("world")
+                    pdf(NULL)
+                    p <- ggplot2::ggplot(mtcars, ggplot2::aes(x=wt1, y=mpg)) +
+                        ggplot2::geom_point()
+                    print(p)
+                    dev.off()
+                }
+                main2 <- function() { main3() }
+                main1 <- function() { main2() }
+                main1()
             }
         """
         lang = "Rscript"
