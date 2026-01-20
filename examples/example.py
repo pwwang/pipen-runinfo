@@ -25,13 +25,11 @@ if r_installed:
             if ({{in.var}} == 0) {
                 print("hello")
             } else {
+                library(dplyr)
                 main3 <- function() {
                     print("world")
-                    pdf(NULL)
-                    p <- ggplot2::ggplot(mtcars, ggplot2::aes(x=wt1, y=mpg)) +
-                        ggplot2::geom_point()
-                    print(p)
-                    dev.off()
+                    data.frame(a = 1) %>%
+                        dplyr::mutate(b = !!rlang::parse_expr("b + 1"))
                 }
                 main2 <- function() { main3() }
                 main1 <- function() { main2() }
