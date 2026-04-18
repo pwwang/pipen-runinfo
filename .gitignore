@@ -112,7 +112,7 @@ site/
 t-*.ipynb
 *-output/
 
-.history/
+.ruff_cache/
 *_results/
 myoutput/
 
