@@ -172,7 +172,9 @@ if (!interactive() && sys.nframe() == 0L) {
 
     # Get this script's filename and source it
     script_file <- commandArgs(trailingOnly=TRUE)[1]
-    if (is.na(script_file)) script_file <- "{{job.script_file}}"
+    if (is.na(script_file) || length(script_file) == 0) {
+        script_file <- "{{job.script_file}}"
+    }
 
     source(script_file, local = TRUE)
     # Don't proceed further, we already sourced
