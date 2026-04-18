@@ -72,5 +72,5 @@ jobs:
       - name: Publish to PyPI
         run: |
           uv build
-          uv publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_PASSWORD }}
+          uv publish --username ${{ secrets.PYPI_USER }} --password ${{ secrets.PYPI_PASSWORD }}
         if: success()
