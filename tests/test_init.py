@@ -28,7 +28,12 @@ def test_pipeline(tmp_path):
         lang = "python"
 
     pipeline = (
-        Pipen(name="PipelinePython", forks=2, outdir=outdir, workdir=workdir)
+        Pipen(
+            name="PipelinePython",
+            forks=2,
+            outdir=outdir,
+            workdir=workdir,
+        )
         .set_starts(Python)
         .set_data([0, 1])
     )
@@ -40,7 +45,6 @@ def test_pipeline_with_no_script(tmp_path):
 
     outdir = tmp_path / "outdir"
     workdir = tmp_path / "workdir"
-    print(workdir)
 
     class Python(Proc):
         """Running info for Python."""
@@ -49,7 +53,12 @@ def test_pipeline_with_no_script(tmp_path):
         lang = "python"
 
     pipeline = (
-        Pipen(name="PipelineNoscript", forks=2, outdir=outdir, workdir=workdir)
+        Pipen(
+            name="PipelineNoscript",
+            forks=2,
+            outdir=outdir,
+            workdir=workdir,
+        )
         .set_starts(Python)
         .set_data([0, 1])
     )

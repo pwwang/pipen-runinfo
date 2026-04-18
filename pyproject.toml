@@ -1,32 +1,31 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
 name = "pipen-runinfo"
 version = "1.1.2"
 description = "Generate running information for jobs in pipen pipelines"
-authors = ["pwwang <pwwang@pwwang.com>"]
-license = "MIT"
+authors = [{name = "pwwang", email = "pwwang@pwwang.com"}]
+license = {text = "MIT"}
 readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pipen>=1.1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-pipen = "^1.1"
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=6",
+]
+examples = [
+    "panpath[async-gs]>=0.4.8",
+    "python-dotenv>=1",
+]
 
-[tool.poetry.build]
-generate-setup-file = true
-
-[tool.poetry.plugins.pipen]
+[project.entry-points.pipen]
 runinfo = "pipen_runinfo:PipenRuninfoPlugin"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8"
-pytest-cov = "^6"
-
-[tool.poetry.group.examples.dependencies]
-panpath = {version = "^0.4.8", extras = ["async-gs"]}
-python-dotenv = "^1"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "-v --cov pipen_runinfo --cov-report xml:.coverage.xml --cov-report term-missing"
@@ -45,3 +44,8 @@ allow_redefinition = true
 disable_error_code = ["attr-defined", "no-redef", "union-attr", "import"]
 show_error_codes = true
 strict_optional = false
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+]
