@@ -180,7 +180,7 @@ if (!interactive() && sys.nframe() == 0L) {
     # Don't proceed further, we already sourced
     quit(status = 0)
 }
-"""
+""" % {"version": version}
 
 
 def inject_session_code_r(
