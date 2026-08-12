@@ -1,9 +1,19 @@
-# pipen-runinfo
+<div align="center">
+    <img src="./logo.png" width="240px" alt="pipen-runinfo logo" />
 
-Generate running information for jobs in [pipen][1] pipelines.
+   <p style="font-weight:bold;">
+   Generate running information for jobs in
+   <a href="https://github.com/pwwang/pipen" target="_blank">pipen</a>
+    pipelines.
+    </p>
+    <p>
+    Including session info (packages and versions), time, and device info.
+   </p>
 
-Including session info (packages and versions), time, and device info.
+</div>
 
+
+<hr />
 ## Install
 
 ```bash
