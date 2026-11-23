@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import re
 
+from typing import Callable
 from pipen.utils import ignore_firstline_dedent
 
 from .version import __version__ as version
@@ -326,7 +327,7 @@ def inject_session_code_fish(
     return f"{SESSION_INFO_FISH}\n\n{script}"
 
 
-def get_inject_session_code_fun(lang: str) -> str | None:
+def get_inject_session_code_fun(lang: str) -> Callable[[str, bool, bool], str] | None:
     """Get the language support class."""
     if lang == "python":
         return inject_session_code_python
