@@ -1,6 +1,10 @@
+import os
+import subprocess
+from types import SimpleNamespace
+
 import pytest  # noqa
 from pipen import Proc, Pipen
-from pipen_runinfo import _get_lang
+from pipen_runinfo import PipenRuninfoPlugin, _get_lang
 
 
 # @pytest.mark.forked
@@ -81,3 +85,30 @@ def test_get_lang():
     assert _get_lang("sh") == "sh"
     assert _get_lang("zsh") == "zsh"
     assert _get_lang("python3.8.1") == "python"
+
+
+def test_device_info_fallbacks(tmp_path):
+    job = SimpleNamespace(proc=SimpleNamespace(scheduler=SimpleNamespace(name="local")))
+    code = PipenRuninfoPlugin().on_jobcmd_end(job)
+
+    # Shadow lscpu/free with failing stubs to force the /proc fallbacks
+    shim = tmp_path / "bin"
+    shim.mkdir()
+    for name in ("lscpu", "free"):
+        stub = shim / name
+        stub.write_text("#!/bin/sh\nexit 1\n")
+        stub.chmod(0o755)
+
+    runinfo = tmp_path / "job.runinfo.device"
+    shell = tmp_path / "device.sh"
+    shell.write_text(f'runinfo_device="{runinfo}"\n{code}')
+
+    subprocess.run(
+        ["bash", str(shell)],
+        check=True,
+        env={**os.environ, "PATH": f"{shim}:{os.environ.get('PATH', '')}"},
+    )
+
+    content = runinfo.read_text()
+    assert "processor" in content
+    assert "MemTotal" in content

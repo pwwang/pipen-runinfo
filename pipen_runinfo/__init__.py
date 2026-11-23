@@ -160,11 +160,11 @@ Exit status: %%x' \
             echo "" >> $runinfo_device
             echo "CPU" >> $runinfo_device
             echo "----" >> $runinfo_device
-            lscpu >> $runinfo_device
+            { lscpu 2>/dev/null || cat /proc/cpuinfo; } >> $runinfo_device
             echo "" >> $runinfo_device
             echo "Memory" >> $runinfo_device
             echo "------" >> $runinfo_device
-            free -h >> $runinfo_device
+            { free -h 2>/dev/null || cat /proc/meminfo; } >> $runinfo_device
             echo "" >> $runinfo_device
             echo "Disk" >> $runinfo_device
             echo "----" >> $runinfo_device
@@ -187,8 +187,10 @@ Exit status: %%x' \
             echo "---" >> $runinfo_device
             if nvidia-smi --version &>/dev/null; then
                 nvidia-smi >> $runinfo_device
+            elif command -v rocm-smi &>/dev/null; then
+                rocm-smi >> $runinfo_device
             else
-                echo "nvidia-smi is not available." >> $runinfo_device
+                echo "Neither nvidia-smi nor rocm-smi is available." >> $runinfo_device
             fi
             echo "" >> $runinfo_device
 
