@@ -1,5 +1,8 @@
+import ast
+
 import pytest
 from pipen_runinfo.session_info import (
+    _leading_is_inert,
     inject_session_code_python,
     inject_session_code_r,
     inject_session_code_bash,
@@ -86,3 +89,77 @@ def test_get_inject_session_code_fun():
     assert get_inject_session_code_fun("bash") == inject_session_code_bash
     assert get_inject_session_code_fun("fish") == inject_session_code_fish
     assert get_inject_session_code_fun("unknown") is None
+
+
+def _render_jinja(script: str) -> str:
+    """Approximate pipen's job template so the composed script can be compiled."""
+    rendered = []
+    for line in script.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("{%"):
+            continue
+        if "from yunpath import AnyPath" in stripped:
+            continue
+        rendered.append(line.replace("{{job.metadir}}", "/tmp/job"))
+    return "\n".join(rendered)
+
+
+@pytest.mark.parametrize(
+    "script",
+    [
+        # The shape that broke a real pipeline: shebang + module docstring.
+        '#!/usr/bin/env python3\n"""Doc."""\n\nfrom __future__ import annotations\n\nimport json\n',
+        # docstring, no shebang
+        '"""Doc."""\n\nfrom __future__ import annotations\n\nimport json\n',
+        # nothing before the import
+        "from __future__ import annotations\n\nimport json\n",
+        # comments before the import
+        "# a comment\nfrom __future__ import annotations\n\nimport json\n",
+    ],
+)
+def test_inject_session_code_python_future_import_compiles(script):
+    """A module docstring may precede a future import; injection must respect it.
+
+    ``ast.parse`` cannot catch a misplaced future import (the compiler enforces
+    the position), so this compiles the composed script.
+    """
+    composed = _render_jinja(inject_session_code_python(script, True, False))
+    compile(composed, "<job.script>", "exec")
+
+
+def test_inject_session_code_python_keeps_module_docstring():
+    script = (
+        '#!/usr/bin/env python3\n"""Normalise the sample sheet."""\n\n'
+        "from __future__ import annotations\n\nimport json\n"
+    )
+    composed = _render_jinja(inject_session_code_python(script, False, False))
+    assert ast.get_docstring(ast.parse(composed)) == "Normalise the sample sheet."
+    assert composed.index("from __future__ import annotations") < composed.index(
+        "# Inserted by pipen_runinfo"
+    )
+
+
+def test_inject_session_code_python_future_import_inside_string_still_prepends():
+    """A future import that is only text must not be treated as a statement."""
+    script = "x = '''\nfrom __future__ import annotations\n'''\nprint(x)\n"
+    injected = inject_session_code_python(script, True, False)
+    first = next(line for line in injected.splitlines() if line.strip())
+    assert first.startswith("# Inserted by pipen_runinfo")
+
+
+@pytest.mark.parametrize(
+    "chunk, expected",
+    [
+        ("", True),
+        ("\n\n", True),
+        ("#!/usr/bin/env python3\n# comment\n", True),
+        ('"""Module docstring."""\n', True),
+        ('#!/usr/bin/env python3\n"""Module docstring."""\n', True),
+        ('"""One."""\n"""Two."""\n', False),
+        ("x = 1\ny = 2\n", False),
+        ("x = '''\n", False),
+    ],
+)
+def test_leading_is_inert(chunk, expected):
+    """Only comments, blanks and a single module docstring may precede the import."""
+    assert _leading_is_inert(chunk) is expected

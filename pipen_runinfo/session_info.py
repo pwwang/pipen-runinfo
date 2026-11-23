@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import ast
 import re
+
 from pipen.utils import ignore_firstline_dedent
 
 from .version import __version__ as version
@@ -83,6 +85,44 @@ future_import_statement = re.compile(
 )
 
 
+def _leading_is_inert(chunk: str) -> bool:
+    """Whether everything before a future import may legally stay ahead of it.
+
+    Python allows ``from __future__ import ...`` after the module docstring and
+    nothing else, so the chunk must be empty, comments only, or a single string
+    literal (the docstring).  Anything else means the matched future import was
+    not a real statement (it is most likely inside a string), and the caller
+    falls back to prepending the injected code.
+
+    Args:
+        chunk: The script text that precedes the matched future import.
+
+    Returns:
+        True when the future import can stay in place.
+    """
+    if not chunk.strip():
+        return True
+
+    try:
+        tree = ast.parse(chunk)
+    except SyntaxError:
+        # An unterminated string or similar: the match is not a real statement.
+        return False
+
+    if not tree.body:
+        return True
+
+    if len(tree.body) > 1:
+        return False
+
+    node = tree.body[0]
+    return (
+        isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Constant)
+        and isinstance(node.value.value, str)
+    )
+
+
 def inject_session_code_python(
     script: str,
     show_path: bool,
@@ -109,13 +149,13 @@ def inject_session_code_python(
         return f"{code}\n\n{script}"
 
     # Matched!
-    # Check if the future import is at the top
-    # The first parts must be empty or comments
-    if not parts[0].strip() or all(
-        line.lstrip().startswith("#") or not line.strip()
-        for line in parts[0].splitlines()
-    ):
-        return f"from __future__ import annotations\n{code}\n{''.join(parts)}"
+    # The future import may only stay where it is when everything before it is
+    # inert: a shebang, comments, blank lines and optionally the module
+    # docstring.  A docstring is legal ahead of a future import, so it must not
+    # push the import into the "probably in a string" branch below.
+    if _leading_is_inert(parts[0]):
+        # Keep the original order: preamble, future import, injected code.
+        return f"{parts[0]}\nfrom __future__ import annotations\n{code}\n{parts[1]}"
 
     # The future import is not at the top, it is probably in a string
     return f"{code}\n\n{script}"
