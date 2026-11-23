@@ -42,7 +42,7 @@ class PipenRuninfoPlugin:
     priority = 998
 
     @plugin.impl
-    async def on_init(pipen: Pipen):
+    async def on_init(pipen: Pipen):  # type: ignore
         """Called when the pipeline is initialized."""
         # Whether to include module path in the runinfo (for python only)
         # Either pipeline-level option or process-level option
@@ -55,7 +55,7 @@ class PipenRuninfoPlugin:
         pipen.config.plugin_opts.setdefault("runinfo_lang", None)
 
     @plugin.impl
-    async def on_proc_script_computed(proc: Proc):
+    async def on_proc_script_computed(proc: Proc):  # type: ignore
         """Called when a process is initialized.
 
         Try to modify the script so that we can get the runinfo.
@@ -76,6 +76,7 @@ class PipenRuninfoPlugin:
         )
         if not runinfo_lang:
             langpath = proc.lang
+            assert langpath is not None
             runinfo_lang = _get_lang(langpath)
 
         if proc.script is None:  # pragma: no cover
@@ -87,12 +88,12 @@ class PipenRuninfoPlugin:
 
         proc.script = inject_session_code_fun(
             proc.script,
-            show_path=runinfo_path,
-            include_submodule=runinfo_submod,
+            runinfo_path,
+            runinfo_submod,
         )
 
     @plugin.impl
-    def on_jobcmd_init(job: Job) -> str:
+    def on_jobcmd_init(job: Job) -> str:  # type: ignore
         if isinstance(job.metadir.mounted, CloudPath):  # pragma: no cover
             return textwrap.dedent(
                 f"""
@@ -114,7 +115,7 @@ class PipenRuninfoPlugin:
             )
 
     @plugin.impl
-    def on_jobcmd_prep(job: Job) -> str:
+    def on_jobcmd_prep(job: Job) -> str:  # type: ignore
         return textwrap.dedent(
             r"""
             # plugin: runinfo
@@ -141,7 +142,8 @@ Exit status: %%x' \
         )
 
     @plugin.impl
-    def on_jobcmd_end(job: Job) -> str:
+    def on_jobcmd_end(job: Job) -> str:  # type: ignore
+        assert job.proc is not None
         return textwrap.dedent(
             """        # plugin: runinfo
 
